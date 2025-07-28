@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Delete, Put } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.model';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -12,14 +13,11 @@ export class TasksController {
   }
 
   @Post()
-  createTask(
-    @Body('title') title: string,
-    @Body('description') description: string,
-  ): Task {
-    if (!title || !description) {
+  createTask(@Body() createTaskDto: CreateTaskDto): Task {
+    if (!createTaskDto.title || !createTaskDto.description) {
       throw new Error('Title and description are required');
     }
-    return this.tasksService.CreateTask(title, description);
+    return this.tasksService.CreateTask(createTaskDto);
   }
 
   @Get(':id')
