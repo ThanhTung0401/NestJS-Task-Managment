@@ -1,15 +1,29 @@
-import { Body, Controller, Get, Post, Delete, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Put,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTaskFiltersDto } from './dto/get-task-filters.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(): Task[] {
-    return this.tasksService.GetAllTasks();
+  getTasks(@Query() filterDto: GetTaskFiltersDto): Task[] {
+    if (Object.keys(filterDto).length) {
+      return this.tasksService.getTasksWithFilters(filterDto);
+    } else {
+      return this.tasksService.GetAllTasks();
+    }
   }
 
   @Post()
@@ -20,15 +34,15 @@ export class TasksController {
     return this.tasksService.CreateTask(createTaskDto);
   }
 
-  @Get(':id')
-  getTaskById(@Body('id') id: string): Task {
+  @Get('/:id')
+  getTaskById(@Param('id') id: string): Task {
     if (!id) {
       throw new Error('ID is required');
     }
     return this.tasksService.GetTaskById(id);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   deleteTask(@Body('id') id: string): void {
     if (!id) {
       throw new Error('ID is required');
