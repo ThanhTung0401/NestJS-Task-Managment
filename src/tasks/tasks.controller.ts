@@ -12,6 +12,7 @@ import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTaskFiltersDto } from './dto/get-task-filters.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -21,9 +22,8 @@ export class TasksController {
   getTasks(@Query() filterDto: GetTaskFiltersDto): Task[] {
     if (Object.keys(filterDto).length) {
       return this.tasksService.getTasksWithFilters(filterDto);
-    } else {
-      return this.tasksService.GetAllTasks();
     }
+    return this.tasksService.GetAllTasks();
   }
 
   @Post()
@@ -52,11 +52,15 @@ export class TasksController {
 
   @Put(':id/status')
   updateTaskStatus(
-    @Body('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Param('id') id: string,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ): Task {
+    const { status } = updateTaskStatusDto;
     if (!id || !status) {
       throw new Error('ID and status are required');
+    }
+    if (!Object.values(TaskStatus).includes(status)) {
+      throw new Error(`Invalid status: ${status}`);
     }
     return this.tasksService.UpdateTaskStatus(id, status);
   }
