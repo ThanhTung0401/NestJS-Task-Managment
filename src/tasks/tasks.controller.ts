@@ -14,6 +14,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTaskFiltersDto } from './dto/get-task-filters.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import {Task} from "./task.entity";
+import {DeleteResult} from "typeorm";
 
 @Controller('tasks')
 export class TasksController {
@@ -26,6 +27,11 @@ export class TasksController {
   @Post()
     createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
         return this.tasksService.createTask(createTaskDto);
+  }
+
+  @Delete('/:id')
+    deleteTask(@Param('id') id: string): Promise<DeleteResult> {
+      return this.tasksService.deleteTask(id);
   }
 }
 
